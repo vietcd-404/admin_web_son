@@ -1,7 +1,12 @@
 import React from "react";
+import SanPhamChiTietLayout from "../../../components/admin/LayoutSanPhamChiTiet";
 
 const SanPhamChiTiet = () => {
-  return <div>SanPhamChiTiet</div>;
+  return (
+    <div>
+      <SanPhamChiTietLayout />
+    </div>
+  );
 };
 
 export default SanPhamChiTiet;

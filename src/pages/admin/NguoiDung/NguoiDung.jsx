@@ -1,7 +1,12 @@
 import React from "react";
+import QLNguoiDung from "../../../components/admin/QLNguoiDung";
 
 const NguoiDung = () => {
-  return <div>NguoiDung</div>;
+  return (
+    <div>
+      <QLNguoiDung />
+    </div>
+  );
 };
 
 export default NguoiDung;

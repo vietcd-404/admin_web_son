@@ -5,7 +5,7 @@ export const findAllLoai = async () => {
 };
 
 export const createLoai = async (loai) => {
-  return await api.post("/admin/loai", loai);
+  return await api.post("/admin/loai/add", loai);
 };
 
 export const updateLoai = async (loai, maLoai) => {

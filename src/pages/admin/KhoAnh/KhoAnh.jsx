@@ -1,7 +1,7 @@
 import React from "react";
 import UploadImage from "../../../components/admin/UploadImage";
 
-const ThongKe = () => {
+const KhoAnh = () => {
   return (
     <div>
       <UploadImage />
@@ -9,4 +9,4 @@ const ThongKe = () => {
   );
 };
 
-export default ThongKe;
+export default KhoAnh;

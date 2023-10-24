@@ -6,11 +6,12 @@ import {
   DashboardOutlined,
   MacCommandOutlined,
   PayCircleOutlined,
+  InboxOutlined,
 } from "@ant-design/icons";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Layout, Menu, theme, Button } from "antd";
+import { Layout, Menu, theme, Button, Image } from "antd";
 import { Link } from "react-router-dom";
-
+import logo from "../../assets/image/logo.jpg";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -53,6 +54,11 @@ const items = [
     "10",
     <PayCircleOutlined />
   ),
+  getItem(
+    <Link to="/admin/quan-li-kho-anh">Kho ảnh</Link>,
+    "11",
+    <InboxOutlined />
+  ),
 ];
 const LayoutAdmin = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -71,6 +77,7 @@ const LayoutAdmin = ({ children }) => {
         onCollapse={(value) => setCollapsed(value)}
         width="250"
       >
+        <Image src={logo} width="100%" height="100px" preview="" />
         <div className="demo-logo-vertical" />
         <Menu
           theme="dark"

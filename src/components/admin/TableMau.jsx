@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Button, Col, Form, Input, Row, Space, Table, Modal } from "antd";
-
+import "react-toastify/dist/ReactToastify.css";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import SearchInput from "./SearchInput";
 import { ExclamationCircleFilled } from "@ant-design/icons";
+import { ToastContainer, toast } from "react-toastify";
 import {
-  createLoai,
-  deleteById,
-  findAllLoai,
-  updateLoai,
-} from "../../services/LoaiService";
-import { toast } from "react-toastify";
+  createMau,
+  deleteMau,
+  findAllMau,
+  updateMau,
+} from "../../services/MauService";
 
-const TableLoai = () => {
+const TableMau = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalPage, setTotalPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [editFormData, setEditFormData] = useState(null); // Data for editing
+  const [editFormData, setEditFormData] = useState(null);
+  const [searchTenMau, setSearchTenMau] = useState("");
 
   const [form] = Form.useForm();
   const [formUpdate] = Form.useForm();
@@ -48,7 +48,7 @@ const TableLoai = () => {
   //Hiện list danh sách lên
   const loadTable = async () => {
     try {
-      const response = await findAllLoai();
+      const response = await findAllMau();
       setData(response.data);
       setTotalPage(response.totalPage);
       setLoading(false);
@@ -69,7 +69,7 @@ const TableLoai = () => {
       onOk: async () => {
         try {
           const values = await form.validateFields();
-          const response = await createLoai(values);
+          const response = await createMau(values);
           if (response.status === 200) {
             console.log(response);
             setIsModalOpen(false);
@@ -97,10 +97,11 @@ const TableLoai = () => {
       onOk: async () => {
         try {
           const values = await formUpdate.validateFields();
-          const response = await updateLoai(values, editFormData.maLoai);
+          const response = await updateMau(values, editFormData.maMau);
           if (response.status === 200) {
             console.log(response);
             setIsEditModalOpen(false);
+
             toast.success("Cập nhật thành công!");
             loadTable();
           }
@@ -124,7 +125,7 @@ const TableLoai = () => {
       cancelText: "Hủy",
       onOk: async () => {
         try {
-          const response = await deleteById(record.maLoai);
+          const response = await deleteMau(record.maMau);
           if (response.status === 200) {
             toast.success("Xóa thành công!");
             loadTable();
@@ -141,15 +142,30 @@ const TableLoai = () => {
   const columns = [
     {
       title: "Tên",
-      dataIndex: "tenLoai",
-      key: "tenLoai",
+      dataIndex: "tenMau",
+      key: "tenMau",
+      filteredValue: [searchTenMau],
+      onFilter: (value, record) => {
+        return String(record.tenMau)
+          .toLowerCase()
+          .includes(value.toLowerCase());
+      },
     },
     {
       title: "Trạng Thái",
       dataIndex: "trangThai",
       key: "trangThai",
-      render: (trangThai) =>
-        trangThai === 0 ? "Hoạt động" : "Không hoạt động",
+      render: (trangThai) => {
+        return <p>{trangThai === 0 ? "Hoạt động" : "Không hoạt động"}</p>;
+      },
+      filters: [
+        { text: "Hoạt động", value: 0 },
+        { text: "Không hoạt động", value: 1 },
+      ],
+      onFilter: (value, record) => {
+        const trangThaiMatch = record.trangThai === parseInt(value);
+        return trangThaiMatch;
+      },
     },
     {
       title: "Chức năng",
@@ -168,16 +184,25 @@ const TableLoai = () => {
   ];
   return (
     <div>
-      <Row>
+      <ToastContainer />
+      <Row style={{ marginBottom: "20px" }}>
         <Col span={12}>
-          <SearchInput text="Tìm kiếm loại" />
+          <Input.Search
+            placeholder="Tìm kiếm loại ..."
+            onSearch={(value) => {
+              setSearchTenMau(value);
+            }}
+            onChange={(e) => {
+              setSearchTenMau(e.target.value);
+            }}
+          />
         </Col>
         <Col span={4} offset={8}>
           <Button type="primary" onClick={showModal}>
             Thêm
           </Button>
           <Modal
-            title="Thêm loại"
+            title="Thêm màu"
             open={isModalOpen}
             onCancel={handleCancel}
             onOk={handleAdd}
@@ -185,7 +210,7 @@ const TableLoai = () => {
             <Form onFinish={handleAdd} form={form}>
               <Form.Item
                 label="Tên"
-                name="tenLoai"
+                name="tenMau"
                 style={{ width: "360px", marginLeft: "40px" }}
                 rules={[
                   { required: true, message: "Tên loại không được để trống!" },
@@ -202,31 +227,18 @@ const TableLoai = () => {
         title="Cập nhật loại"
         open={isEditModalOpen}
         onCancel={handleEditCancel}
-        // onOk={handleUpdate}
-        footer={[
-          <Button key="cancel" onClick={handleEditCancel}>
-            Cancel
-          </Button>,
-          <Button
-            key="submit"
-            type="primary"
-            onClick={handleUpdate}
-            style={{ background: "green", borderColor: "green" }}
-          >
-            Update
-          </Button>,
-        ]}
+        onOk={handleUpdate}
       >
         <Form form={formUpdate} name="editForm" initialValues={editFormData}>
           <Form.Item
             label="Tên"
-            name="tenLoai"
+            name="tenMau"
             style={{ width: "360px", marginLeft: "40px" }}
             rules={[
               { required: true, message: "Tên loại không được để trống!" },
             ]}
           >
-            <Input placeholder="Tên" />
+            <Input value={editFormData?.tenMau} placeholder="Tên" />
           </Form.Item>
         </Form>
       </Modal>
@@ -239,11 +251,11 @@ const TableLoai = () => {
           dataSource={data}
           pagination={{
             pageSize: 5,
-            total: totalPage,
+            current: totalPage,
           }}
         />
       )}
     </div>
   );
 };
-export default TableLoai;
+export default TableMau;

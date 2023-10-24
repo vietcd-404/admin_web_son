@@ -9,6 +9,10 @@ import Mau from "../pages/admin/ThuocTinh/Mau";
 import ThuongHieu from "../pages/admin/ThuocTinh/ThuongHieu";
 import NguoiDung from "../pages/admin/NguoiDung/NguoiDung";
 import ThanhToan from "../pages/admin/PhuongThucThanhToan/ThanhToan";
+import TableSPCT from "../components/admin/TableSPCT";
+import ListSPCT from "../components/admin/ListSPCT";
+import SanPhamChiTietLayout from "../components/admin/LayoutSanPhamChiTiet";
+import KhoAnh from "../pages/admin/KhoAnh/KhoAnh";
 
 const AdminRouter = () => {
   return (
@@ -27,6 +31,26 @@ const AdminRouter = () => {
           element={
             <LayoutAdmin>
               <SanPhamChiTiet />
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/admin/san-pham-chi-tiet/quan-ly-san-pham"
+          element={
+            <LayoutAdmin>
+              <SanPhamChiTietLayout>
+                <TableSPCT></TableSPCT>
+              </SanPhamChiTietLayout>
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/admin/san-pham-chi-tiet/danh-sach"
+          element={
+            <LayoutAdmin>
+              <SanPhamChiTietLayout>
+                <ListSPCT></ListSPCT>
+              </SanPhamChiTietLayout>
             </LayoutAdmin>
           }
         />
@@ -75,6 +99,14 @@ const AdminRouter = () => {
           element={
             <LayoutAdmin>
               <ThanhToan />
+            </LayoutAdmin>
+          }
+        />
+        <Route
+          path="/admin/quan-li-kho-anh"
+          element={
+            <LayoutAdmin>
+              <KhoAnh />
             </LayoutAdmin>
           }
         />

@@ -4,15 +4,16 @@ import { Button, Col, Form, Input, Row, Space, Table, Modal } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import SearchInput from "./SearchInput";
 import { ExclamationCircleFilled } from "@ant-design/icons";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
-  createLoai,
-  deleteById,
-  findAllLoai,
-  updateLoai,
-} from "../../services/LoaiService";
-import { toast } from "react-toastify";
+  createThuongHieu,
+  deleteThuongHieu,
+  findAllThuongHieu,
+  updateThuongHieu,
+} from "../../services/ThuongHieuService";
 
-const TableLoai = () => {
+const TableThuongHieu = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalPage, setTotalPage] = useState(1);
@@ -48,7 +49,7 @@ const TableLoai = () => {
   //Hiện list danh sách lên
   const loadTable = async () => {
     try {
-      const response = await findAllLoai();
+      const response = await findAllThuongHieu();
       setData(response.data);
       setTotalPage(response.totalPage);
       setLoading(false);
@@ -62,14 +63,14 @@ const TableLoai = () => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn thêm loại mới?",
+      content: "Bạn có chắc muốn thêm thương hiệu mới?",
       okText: "OK",
       okType: "danger",
       cancelText: "Đóng",
       onOk: async () => {
         try {
           const values = await form.validateFields();
-          const response = await createLoai(values);
+          const response = await createThuongHieu(values);
           if (response.status === 200) {
             console.log(response);
             setIsModalOpen(false);
@@ -78,7 +79,7 @@ const TableLoai = () => {
             form.resetFields();
           }
         } catch (error) {
-          console.error("Lỗi khi tạo loại: ", error);
+          console.error("Lỗi khi tạo thương hiệu : ", error);
           toast.error("Thêm mới thất bại.");
         }
       },
@@ -90,14 +91,17 @@ const TableLoai = () => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn cập nhập loại không?",
+      content: "Bạn có chắc muốn cập nhập thương hiệu không?",
       okText: "OK",
       okType: "danger",
       cancelText: "Đóng",
       onOk: async () => {
         try {
           const values = await formUpdate.validateFields();
-          const response = await updateLoai(values, editFormData.maLoai);
+          const response = await updateThuongHieu(
+            values,
+            editFormData.maThuongHieu
+          );
           if (response.status === 200) {
             console.log(response);
             setIsEditModalOpen(false);
@@ -105,7 +109,7 @@ const TableLoai = () => {
             loadTable();
           }
         } catch (error) {
-          console.error("Lỗi khi cập nhật loại: ", error);
+          console.error("Lỗi khi cập nhật thương hiệu : ", error);
           toast.error("Cập nhật thất bại.");
         }
       },
@@ -118,13 +122,13 @@ const TableLoai = () => {
     Modal.confirm({
       title: "Xác nhận",
       icon: <ExclamationCircleFilled />,
-      content: "Bạn có chắc muốn xóa loại này?",
+      content: "Bạn có chắc muốn xóa thương hiệu này?",
       okText: "Xóa",
       okType: "danger",
       cancelText: "Hủy",
       onOk: async () => {
         try {
-          const response = await deleteById(record.maLoai);
+          const response = await deleteThuongHieu(record.maThuongHieu);
           if (response.status === 200) {
             toast.success("Xóa thành công!");
             loadTable();
@@ -141,8 +145,8 @@ const TableLoai = () => {
   const columns = [
     {
       title: "Tên",
-      dataIndex: "tenLoai",
-      key: "tenLoai",
+      dataIndex: "tenThuongHieu",
+      key: "tenThuongHieu",
     },
     {
       title: "Trạng Thái",
@@ -168,16 +172,17 @@ const TableLoai = () => {
   ];
   return (
     <div>
+      <ToastContainer />
       <Row>
         <Col span={12}>
           <SearchInput text="Tìm kiếm loại" />
         </Col>
         <Col span={4} offset={8}>
-          <Button type="primary" onClick={showModal}>
+          <Button className="bg-blue-500 text-white" onClick={showModal}>
             Thêm
           </Button>
           <Modal
-            title="Thêm loại"
+            title="Thêm thương hiệu"
             open={isModalOpen}
             onCancel={handleCancel}
             onOk={handleAdd}
@@ -185,7 +190,7 @@ const TableLoai = () => {
             <Form onFinish={handleAdd} form={form}>
               <Form.Item
                 label="Tên"
-                name="tenLoai"
+                name="tenThuongHieu"
                 style={{ width: "360px", marginLeft: "40px" }}
                 rules={[
                   { required: true, message: "Tên loại không được để trống!" },
@@ -202,25 +207,12 @@ const TableLoai = () => {
         title="Cập nhật loại"
         open={isEditModalOpen}
         onCancel={handleEditCancel}
-        // onOk={handleUpdate}
-        footer={[
-          <Button key="cancel" onClick={handleEditCancel}>
-            Cancel
-          </Button>,
-          <Button
-            key="submit"
-            type="primary"
-            onClick={handleUpdate}
-            style={{ background: "green", borderColor: "green" }}
-          >
-            Update
-          </Button>,
-        ]}
+        onOk={handleUpdate}
       >
         <Form form={formUpdate} name="editForm" initialValues={editFormData}>
           <Form.Item
             label="Tên"
-            name="tenLoai"
+            name="tenThuongHieu"
             style={{ width: "360px", marginLeft: "40px" }}
             rules={[
               { required: true, message: "Tên loại không được để trống!" },
@@ -246,4 +238,4 @@ const TableLoai = () => {
     </div>
   );
 };
-export default TableLoai;
+export default TableThuongHieu;
